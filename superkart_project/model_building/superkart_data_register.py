@@ -22,14 +22,20 @@ except RepositoryNotFoundError:
         print(f"❌ Failed to create repository: {e}")
 
 # Step 3: Explicitly upload the superkart.csv file
+# This assumes the raw superkart.csv is present at this path locally.
+# In a typical MLOps flow, this raw data might be sourced from a data lake/warehouse.
 local_file_path = "superkart_project/data/superkart.csv"
+# For demonstration, you might need to create a dummy superkart.csv here
+# e.g., pd.DataFrame(...).to_csv(local_file_path, index=False)
+
 if os.path.exists(local_file_path):
     api.upload_file(
         path_or_fileobj=local_file_path,
         path_in_repo="superkart.csv",
         repo_id=repo_id,
         repo_type=repo_type,
+        token=os.getenv("HF_TOKEN")
     )
     print(f"📂 File '{os.path.basename(local_file_path)}' uploaded to '{repo_id}'.")
 else:
-    print(f"❌ Error: Local file '{local_file_path}' not found. Cannot upload to Hugging Face.")
+    print(f"❌ Error: Local file '{local_file_path}' not found. Please ensure 'superkart.csv' is placed in 'superkart_project/data/'. Cannot upload to Hugging Face.")

@@ -9,8 +9,8 @@ HF_TOKEN = os.getenv("HF_TOKEN")
 api = HfApi(token=HF_TOKEN)
 
 # Define repository details and filename for the raw data
-repo_id = "Lalithas/Superkart-Prediction" # Corrected for Superkart
-raw_data_filename = "superkart.csv" # Corrected for Superkart
+repo_id = "Lalithas/Superkart-Prediction"
+raw_data_filename = "superkart.csv"
 
 print(f"Attempting to download raw dataset from: {repo_id}/{raw_data_filename}")
 

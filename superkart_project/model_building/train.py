@@ -17,9 +17,10 @@ data_repo_id = "Lalithas/Superkart-Prediction"
 model_repo_id = "Lalithas/Superkart-Prediction-Model"
 
 # Set MLflow tracking URI and experiment name
-mlflow_tracking_dir = "./mlruns" # Use a relative path for local tracking
+# Use an absolute path for MLflow tracking to ensure it's writable in CI/CD environments
+mlflow_tracking_dir = os.path.abspath(os.path.join(os.getcwd(), "mlruns"))
 os.makedirs(mlflow_tracking_dir, exist_ok=True)
-mlflow.set_tracking_uri(mlflow_tracking_dir)
+mlflow.set_tracking_uri(f"file://{mlflow_tracking_dir}") # Explicitly use file:// URI
 mlflow.set_experiment("Superkart_Sales_Prediction")
 
 # Download processed data from Hugging Face Hub
@@ -81,10 +82,10 @@ with mlflow.start_run(run_name="RandomForest_Hyperparameter_Tuning") as parent_r
 
         print("Test Set Metrics:")
         print(f"  MAE: {mae:.2f}")
-        print(f"  R²: {r2:.4f}")
+        print(f"  R²: {r2:.4f}") # Changed f"  R²: {r2:.4f}") to print for proper output
 
         mlflow.log_metrics({"test_mae": mae, "test_r2": r2})
-        
+
         # Log the model using MLflow
         mlflow.sklearn.log_model(best_model, "best_random_forest_model")
         print("✅ Best model logged to MLflow.")
