@@ -31,11 +31,15 @@ jobs:
           mkdir -p superkart_project/output
 
       - name: Run Data Preparation
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           echo "Running data preparation..."
           python superkart_project/model_building/prep.py || { echo 'Data prep failed'; exit 1; }
 
       - name: Run Model Training
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           echo "Training model..."
           python superkart_project/model_building/train.py
