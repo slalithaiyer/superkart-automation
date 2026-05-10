@@ -1,0 +1,14 @@
+artifact_uri: /content/superkart-automation/mlruns/155671508120400299/451309a96d1c4611afc3ddc1227a9de6/artifacts
+end_time: 1778423047609
+entry_point_name: ''
+experiment_id: '155671508120400299'
+lifecycle_stage: active
+run_id: 451309a96d1c4611afc3ddc1227a9de6
+run_name: RandomForest_Hyperparameter_Tuning
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1778422970586
+status: 3
+tags: []
+user_id: root

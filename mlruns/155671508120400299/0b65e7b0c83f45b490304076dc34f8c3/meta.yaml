@@ -1,0 +1,14 @@
+artifact_uri: /content/superkart-automation/mlruns/155671508120400299/0b65e7b0c83f45b490304076dc34f8c3/artifacts
+end_time: 1778423047607
+entry_point_name: ''
+experiment_id: '155671508120400299'
+lifecycle_stage: active
+run_id: 0b65e7b0c83f45b490304076dc34f8c3
+run_name: Best_RandomForest_Model_Evaluation
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1778423039567
+status: 3
+tags: []
+user_id: root
