@@ -2,12 +2,9 @@ name: Superkart ML Pipeline
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
-  workflow_dispatch:
+    branches: [main]
 
 jobs:
   build-and-deploy:
@@ -15,10 +12,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
@@ -26,67 +23,32 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r superkart_project/deployment/requirements.txt
-          pip install mlflow scikit-learn huggingface_hub
+          pip install mlflow scikit-learn huggingface_hub pandas numpy
 
       - name: Create necessary local directories
         run: |
           mkdir -p superkart_project/data
-          mkdir -p superkart_project/model
-
-      # Removed 'Run Data Registration' step as prep.py downloads data from Hugging Face.
-      # - name: Run Data Registration
-      #   run: python superkart_project/model_building/superkart_data_register.py
+          mkdir -p superkart_project/output
 
       - name: Run Data Preparation
-        run: python superkart_project/model_building/prep.py
+        run: |
+          echo "Running data preparation..."
+          python superkart_project/model_building/prep.py || { echo 'Data prep failed'; exit 1; }
 
       - name: Run Model Training
-        run: python superkart_project/model_building/train.py
+        run: |
+          echo "Training model..."
+          python superkart_project/model_building/train.py
 
       - name: Upload Streamlit App Files to Hugging Face Space
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          python - <<'EOF'
-          import os
-          from huggingface_hub import HfApi, create_repo
+          echo "Uploading Streamlit app..."
+          python superkart_project/deployment/app.py
 
-          token = os.getenv("HF_TOKEN")
-          api = HfApi(token=token)
-          space_repo_id = "Lalithas/superkart"
+      - name: Post Set up Python
+        run: echo "Pipeline completed successfully."
 
-          # Ensure the Space exists
-          try:
-              api.repo_info(repo_id=space_repo_id, repo_type="space")
-              print(f"Space {space_repo_id} already exists.")
-          except Exception:
-              create_repo(
-                  repo_id=space_repo_id,
-                  repo_type="space",
-                  private=False,
-                  space_sdk="streamlit",
-                  space_hardware="cpu-basic",
-                  token=token
-              )
-              print(f"Space {space_repo_id} created successfully.")
-
-          # Upload deployment files
-          deployment_files = [
-              "superkart_project/deployment/Dockerfile",
-              "superkart_project/deployment/app.py",
-              "superkart_project/deployment/requirements.txt"
-          ]
-
-          for file_path in deployment_files:
-              if os.path.exists(file_path):
-                  api.upload_file(
-                      path_or_fileobj=file_path,
-                      path_in_repo=os.path.basename(file_path),
-                      repo_id=space_repo_id,
-                      repo_type="space",
-                      token=token
-                  )
-                  print(f"Uploaded {os.path.basename(file_path)} to {space_repo_id}")
-              else:
-                  print(f"Error: File not found for upload: {file_path}")
-          EOF
+      - name: Complete job
+        run: echo "✅ All steps finished."
