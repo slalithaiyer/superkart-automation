@@ -16,11 +16,18 @@ api = HfApi(token=HF_TOKEN)
 data_repo_id = "Lalithas/Superkart-Prediction"
 model_repo_id = "Lalithas/Superkart-Prediction-Model"
 
+# Diagnostic prints for debugging MLflow paths in GitHub Actions
+print(f"[DEBUG] Current working directory: {os.getcwd()}")
+print(f"[DEBUG] MLFLOW_TRACKING_URI env var: {os.environ.get('MLFLOW_TRACKING_URI')}")
+print(f"[DEBUG] MLFLOW_ARTIFACT_URI env var: {os.environ.get('MLFLOW_ARTIFACT_URI')}")
+
 # Set MLflow tracking URI and experiment name
 # Use an absolute path for MLflow tracking to ensure it's writable in CI/CD environments
-mlflow_tracking_dir = os.path.abspath(os.path.join(os.getcwd(), "mlruns"))
+# We'll explicitly place mlruns inside superkart_project for better isolation
+mlflow_tracking_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "mlruns"))
 os.makedirs(mlflow_tracking_dir, exist_ok=True)
 mlflow.set_tracking_uri(f"file://{mlflow_tracking_dir}") # Explicitly use file:// URI
+print(f"[DEBUG] Resolved MLflow tracking directory: {mlflow_tracking_dir}")
 mlflow.set_experiment("Superkart_Sales_Prediction")
 
 # Download processed data from Hugging Face Hub
@@ -82,7 +89,7 @@ with mlflow.start_run(run_name="RandomForest_Hyperparameter_Tuning") as parent_r
 
         print("Test Set Metrics:")
         print(f"  MAE: {mae:.2f}")
-        print(f"  R²: {r2:.4f}") # Changed f"  R²: {r2:.4f}") to print for proper output
+        print(f"  R²: {r2:.4f}")
 
         mlflow.log_metrics({"test_mae": mae, "test_r2": r2})
 
