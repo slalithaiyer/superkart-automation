@@ -33,8 +33,9 @@ jobs:
           mkdir -p superkart_project/data
           mkdir -p superkart_project/model
 
-      - name: Run Data Registration
-        run: python superkart_project/model_building/superkart_data_register.py
+      # Removed 'Run Data Registration' step as prep.py downloads data from Hugging Face.
+      # - name: Run Data Registration
+      #   run: python superkart_project/model_building/superkart_data_register.py
 
       - name: Run Data Preparation
         run: python superkart_project/model_building/prep.py
